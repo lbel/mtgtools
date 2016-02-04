@@ -1,0 +1,236 @@
+{
+    "title": "MtG Game",
+    "type": "object",
+    "properties":
+    {
+        "game":
+        {
+            "type": "object",
+            "properties":
+            {
+                "name": { "type": "string" },
+                "format": { "type": "string" },
+                "turn": { "type": "integer", "minimum": 0 },
+                "playerTurn": { "$ref": "#/definitions/playerRef" },
+                "phase": { "type": "integer", "minimum": -1, "maximum": 12 },
+                "priority": { "$ref": "#/definitions/playerRef" },
+                "storm": { "type": "integer", "minimum": 0 }
+            },
+            "required": ["name", "format", "turn", "playerTurn", "phase", "priority"],
+            "additionalProperties": false
+        },
+        "battlefield":
+        {
+            "type": "array",
+            "items": { "$ref": "#/definitions/battlefieldCard" }
+        },
+        "stack":
+        {
+            "type": "array",
+            "items": { "$ref": "#/definitions/stackCard" }
+        },
+        "players":
+        {
+            "type": "array",
+            "items": { "$ref": "#/definitions/player" }
+        }
+    },
+    "additionalProperties": false,
+    "required": ["game", "battlefield", "stack"],
+
+    "definitions":
+    {
+        "entityRef": { "type": "integer", "minimum": 0 },
+        "cardRef": { "type": "integer", "minimum": 0 },
+        "playerRef": { "type": "integer", "minimum": 0 },
+        "abilityRef": { "type": "integer", "minimum": 0 },
+        "manaTypeRef": { "type": "integer", "minimum": 0, "maximum": 6 },
+
+        "card":
+        {
+            "type": "object",
+            "properties":
+            {
+                "id": { "$ref": "#/definitions/cardRef" },
+                "name": { "type": "string" },
+                "manaCost": { "type": "string" },
+                "colors":
+                {
+                    "type": "array",
+                    "items":
+                    {
+                        "type": "string",
+                        "enum": ["white", "blue", "black", "red", "green"]
+                    },
+                    "uniqueItems": true
+                },
+
+                "supertypes":
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": true
+                },
+                "types":
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": true
+                },
+                "subtypes":
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "uniqueItems": true
+                },
+
+                "text": { "type": "string" },
+
+                "power": { "type": "integer" },
+                "toughness": { "type": "integer" },
+                "loyalty": { "type": "integer" },
+
+                "counters":
+                {
+                    "type": "object",
+                    "additionalProperties": { "type": "integer", "minimum": 0 }
+                },
+
+                "isToken": { "type": "boolean" },
+                "isCommander": { "type": "boolean" },
+
+                "flavor": { "type": "string" },
+                "artist": { "type": "string" },
+                "number": { "type": "string" },
+                "multiverseid": { "type": "integer", "minimum": 0 },
+                "imageName": { "type": "string" },
+                "watermark": { "type": "string" },
+                "border": { "type": "string", "enum": ["black", "white", "silver"] }
+            },
+            "required": ["id", "name", "manaCost", "colors", "types", "text"]
+        },
+
+        "gameCard":
+        {
+            "allOf":
+            [
+                { "$ref": "#/definitions/card" },
+                {
+                    "properties":
+                    {
+                        "owner": { "$ref": "#/definitions/playerRef" },
+                        "controller": { "$ref": "#/definitions/playerRef" }
+                    }
+                }
+            ],
+            "required": ["owner", "controller"]
+        },
+
+        "battlefieldCard":
+        {
+            "allOf":
+            [
+                { "$ref": "#/definitions/gameCard" },
+                {
+                    "properties":
+                    {
+                        "isTapped": { "type": "boolean" },
+                        "damage": { "type": "integer", "minimum": 0 },
+                        "isSick": { "type": "boolean" },
+
+                        "attacking": { "$ref": "#/definitions/entityRef" },
+                        "blocking":
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/cardRef" }
+                        },
+
+                        "isPhasedOut": { "type": "boolean" },
+                        "isMounstrous": { "type": "boolean" },
+                        "isRenowned": { "type": "boolean" },
+
+                        "attachedTo": { "$ref": "#/definitions/cardRef" },
+                        "pairedWith": { "$ref": "#/definitions/cardRef" },
+                        "referring":
+                        {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/cardRef" }
+                        },
+
+                        "flipState": { "$ref": "#/definitions/card" },
+                        "backState": { "$ref": "#/definitions/card" }
+                    }
+                }
+            ]
+        },
+
+        "stackCard":
+        {
+            "type": "object",
+            "properties":
+            {
+                "targeting":
+                {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/cardRef" }
+                }
+            },
+            "additionalProperties": { "$ref": "#/definitions/gameCard" }
+        },
+
+        "player":
+        {
+            "type": "object",
+            "properties":
+            {
+                "id": { "type": "integer", "minimum": 0 },
+                "name": { "type": "string" },
+                "life": { "type": "integer" },
+                "counters":
+                {
+                    "type": "object",
+                    "additionalProperties": { "type": "integer", "minimum": 0 }
+                },
+                "manaPool":
+                {
+                    "type": "object",
+                    "properties":
+                    {
+                        "white": { "$ref": "#/definitions/mana" },
+                        "blue": { "$ref": "#/definitions/mana" },
+                        "black": { "$ref": "#/definitions/mana" },
+                        "red": { "$ref": "#/definitions/mana" },
+                        "green": { "$ref": "#/definitions/mana" },
+                        "colorless": { "$ref": "#/definitions/mana" }
+                    },
+                    "additionalProperties": false
+                },
+                "hand": { "$ref": "#/definitions/zone" },
+                "library": { "$ref": "#/definitions/zone" },
+                "graveyard": { "$ref": "#/definitions/zone" },
+                "exile": { "$ref": "#/definitions/zone" },
+                "command": { "$ref": "#/definitions/zone" }
+            },
+            "required": ["name", "life", "manaPool"],
+            "additionalProperties": false
+        },
+        "mana":
+        {
+            "type": "array",
+            "items":
+            {
+                "type": "object",
+                "properties":
+                {
+                    "amount": { "type": "integer", "minimum": 0 },
+                    "label": { "type": "string" }
+                }
+            }
+        },
+        "zone":
+        {
+            "type": "array",
+            "items": { "$ref": "#/definitions/card" }
+        }
+    }
+}
