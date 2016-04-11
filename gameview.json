@@ -12,7 +12,7 @@
                 "format": { "type": "string" },
                 "turn": { "type": "integer", "minimum": 0 },
                 "playerTurn": { "$ref": "#/definitions/playerRef" },
-                "phase": { "type": "integer", "minimum": -1, "maximum": 12 },
+                "phase": { "type": "int", "minimum": -1, "maximum": 12 }, //"enum": ["untap", "upkeep", "draw", "main1", "bc", "da", "db", "fs", "cd", "ec", "main2", "end", "cleanup"],
                 "priority": { "$ref": "#/definitions/playerRef" },
                 "storm": { "type": "integer", "minimum": 0 }
             },
@@ -205,8 +205,8 @@
                     },
                     "additionalProperties": false
                 },
-                "hand": { "$ref": "#/definitions/zone" },
-                "library": { "$ref": "#/definitions/zone" },
+                "hand": { "$ref": "#/definitions/hidden_zone" },
+                "library": { "$ref": "#/definitions/hidden_zone" },
                 "graveyard": { "$ref": "#/definitions/zone" },
                 "exile": { "$ref": "#/definitions/zone" },
                 "command": { "$ref": "#/definitions/zone" }
@@ -231,6 +231,15 @@
         {
             "type": "array",
             "items": { "$ref": "#/definitions/card" }
+        },
+        "hidden_zone":
+        {
+            "type": "object",
+            "properties":
+            {
+                "number": { "type": "integer", "minimum": 0 },
+                "visible": { "$ref": "#/definitions/zone" }
+            }
         }
     }
 }
